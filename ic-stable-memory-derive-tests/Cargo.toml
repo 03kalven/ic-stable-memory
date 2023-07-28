@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 ic-stable-memory = { path = "../../ic-stable-memory" }
-candid = "0.8.4"
+candid = "0.9.2"
 serde = "1.0.152"
 rand = "0.8.5"
-ic-cdk = "0.7.0"
-ic-cdk-macros = "0.6.8"
+ic-cdk = "0.10.0"
+ic-cdk-macros = "0.7.0"
