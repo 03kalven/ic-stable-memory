@@ -1,5 +1,6 @@
 //! Smart-pointers and [StableType] trait
 
+use arrayvec::ArrayString;
 use candid::{Int, Nat, Principal};
 use serde_bytes::ByteBuf;
 use std::collections::{BTreeSet, HashSet};
@@ -399,3 +400,4 @@ impl StableType for BTreeSet<Nat> {}
 impl StableType for BTreeSet<Int> {}
 impl StableType for BTreeSet<ByteBuf> {}
 impl StableType for Subaccount{}
+impl<const CAP: usize> StableType for ArrayString<CAP>{}

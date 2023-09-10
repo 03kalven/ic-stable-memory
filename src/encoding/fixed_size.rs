@@ -11,10 +11,11 @@
 //!
 //! [AsFixedSizeBytes] trait encapusaltes these differences providing a simple API.
 
+use arrayvec::ArrayString;
 use candid::{Int, Nat, Principal};
+use ic_ledger_types::Subaccount;
 use ic_stable_memory_derive::{AsFixedSizeBytes, StableType};
 use num_bigint::{BigInt, BigUint, Sign};
-use ic_ledger_types::Subaccount;
 
 /// Allows fast and space-efficient fixed size data encoding.
 ///
@@ -463,7 +464,7 @@ impl AsFixedSizeBytes for Principal {
     }
 }
 
-impl AsFixedSizeBytes for Subaccount{
+impl AsFixedSizeBytes for Subaccount {
     const SIZE: usize = <[u8; 32]>::SIZE;
     type Buf = [u8; Self::SIZE];
 
@@ -476,6 +477,24 @@ impl AsFixedSizeBytes for Subaccount{
     fn from_fixed_size_bytes(buf: &[u8]) -> Self {
         let inner = <[u8; 32]>::from_fixed_size_bytes(buf);
         Subaccount(inner)
+    }
+}
+
+impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
+    const SIZE: usize = CAP;
+    type Buf = [u8; CAP];
+
+    fn as_fixed_size_bytes(&self, buf: &mut [u8]) {
+        let slice = self.as_bytes();
+
+        buf[0] = slice.len() as u8;
+        buf[1..(1 + slice.len())].copy_from_slice(slice);
+    }
+
+    fn from_fixed_size_bytes(buf: &[u8]) -> Self {
+        let len = buf[0] as usize;
+
+        ArrayString::from_byte_string(&buf[1..(1 + len)].try_into().unwrap()).unwrap()
     }
 }
 
@@ -580,10 +599,10 @@ mod private {
 
 #[test]
 fn subaccount_test() {
-  assert_eq!(Subaccount::SIZE, 32);
-  let acc = Subaccount([1;32]);
-  let buf = acc.as_new_fixed_size_bytes();
-  let acc_copy = Subaccount::from_fixed_size_bytes(&buf);
+    assert_eq!(Subaccount::SIZE, 32);
+    let acc = Subaccount([1; 32]);
+    let buf = acc.as_new_fixed_size_bytes();
+    let acc_copy = Subaccount::from_fixed_size_bytes(&buf);
 
-  assert_eq!(acc, acc_copy);
+    assert_eq!(acc, acc_copy);
 }

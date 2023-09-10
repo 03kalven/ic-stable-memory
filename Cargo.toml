@@ -21,6 +21,7 @@ sha2 = "0.10.6"
 zwohash = "0.1.2"
 ic-stable-memory-derive = "0.4.2"
 ic-ledger-types = "0.4.2"
+arrayvec = "0.7.4"
 
 [dev-dependencies]
 rand = "0.8.5"
