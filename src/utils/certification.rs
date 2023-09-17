@@ -292,6 +292,13 @@ impl AsHashableBytes for Hash {
     }
 }
 
+impl AsHashableBytes for [u8; 64] {
+    #[inline]
+    fn as_hashable_bytes(&self) -> Vec<u8> {
+        self.to_vec()
+    }
+}
+
 impl AsHashableBytes for () {
     #[inline]
     fn as_hashable_bytes(&self) -> Vec<u8> {
