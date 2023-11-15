@@ -482,19 +482,22 @@ impl AsFixedSizeBytes for Subaccount {
 
 impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
     const SIZE: usize = CAP;
-    type Buf = [u8; CAP];
+    type Buf = Vec<u8>;
 
     fn as_fixed_size_bytes(&self, buf: &mut [u8]) {
         let slice = self.as_bytes();
 
-        buf[0] = slice.len() as u8;
-        buf[1..(1 + slice.len())].copy_from_slice(slice);
+        buf[0..usize::SIZE].copy_from_slice(&slice.len().to_le_bytes());
+        buf[usize::SIZE..(usize::SIZE + slice.len())].copy_from_slice(slice);
     }
 
     fn from_fixed_size_bytes(buf: &[u8]) -> Self {
-        let len = buf[0] as usize;
+        let mut b = [0; usize::SIZE];
+        b.copy_from_slice(buf);
+        let len = usize::from_le_bytes(b);
 
-        ArrayString::from_byte_string(&buf[1..(1 + len)].try_into().unwrap()).unwrap()
+        ArrayString::from_byte_string(&buf[usize::SIZE..(usize::SIZE + len)].try_into().unwrap())
+            .unwrap()
     }
 }
 
