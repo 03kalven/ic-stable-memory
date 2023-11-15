@@ -493,7 +493,7 @@ impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
 
     fn from_fixed_size_bytes(buf: &[u8]) -> Self {
         let mut b = [0; usize::SIZE];
-        b.copy_from_slice(buf);
+        b.copy_from_slice(buf[0..usize::SIZE].try_into().unwrap());
         let len = usize::from_le_bytes(b);
 
         ArrayString::from_byte_string(&buf[usize::SIZE..(usize::SIZE + len)].try_into().unwrap())
