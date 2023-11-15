@@ -481,7 +481,7 @@ impl AsFixedSizeBytes for Subaccount {
 }
 
 impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
-    const SIZE: usize = CAP;
+    const SIZE: usize = CAP + usize::SIZE;
     type Buf = Vec<u8>;
 
     fn as_fixed_size_bytes(&self, buf: &mut [u8]) {
