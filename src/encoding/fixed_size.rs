@@ -487,17 +487,20 @@ impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
     fn as_fixed_size_bytes(&self, buf: &mut [u8]) {
         let slice = self.as_bytes();
 
-        buf[0..usize::SIZE].copy_from_slice(&slice.len().to_le_bytes());
+        buf[0..usize::SIZE].copy_from_slice(&slice.len().to_be_bytes());
         buf[usize::SIZE..(usize::SIZE + slice.len())].copy_from_slice(slice);
     }
 
     fn from_fixed_size_bytes(buf: &[u8]) -> Self {
         let mut b = [0; usize::SIZE];
         b.copy_from_slice(buf[0..usize::SIZE].try_into().unwrap());
-        let len = usize::from_le_bytes(b);
+        let len = usize::from_be_bytes(b);
 
         let mut a = ArrayString::zero_filled();
+        assert_eq!(a.len(), 0);
+        assert_eq!(a.capacity(), CAP);
         a.push_str(std::str::from_utf8(&buf[usize::SIZE..(usize::SIZE + len)]).unwrap());
+        assert_eq!(a.as_str(), std::str::from_utf8(&buf[usize::SIZE..(usize::SIZE + len)]).unwrap());
         a
     }
 }
