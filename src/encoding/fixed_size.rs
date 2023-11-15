@@ -497,9 +497,7 @@ impl<const CAP: usize> AsFixedSizeBytes for ArrayString<CAP> {
         let len = usize::from_le_bytes(b);
 
         let mut a = ArrayString::zero_filled();
-        for i in 0..len {
-            a.push(buf[usize::SIZE + i].into());
-        }
+        a.push_str(std::str::from_utf8(&buf[usize::SIZE..(usize::SIZE + len)]).unwrap());
         a
     }
 }
